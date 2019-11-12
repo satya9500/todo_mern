@@ -32,19 +32,7 @@ const userSchema = mongoose.Schema({
         required: true
       }
     }
-  ],
-
-  phone: {
-    type: Number,
-    required: true,
-    minLength: 10,
-    maxlength: 10
-  },
-
-  sex: {
-    type: String,
-    required: true
-  }
+  ]
 });
 
 userSchema.pre("save", async function(next) {

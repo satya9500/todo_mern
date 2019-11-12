@@ -1,7 +1,8 @@
 const express = require("express");
 const User = require("../models/User");
-
+const auth = require("../middleware/auth");
 const router = express.Router();
+const ToDo = require("../models/todo");
 
 router.post("/users", async (req, res) => {
   // Create a new user
@@ -29,6 +30,41 @@ router.post("/users/login", async (req, res) => {
     res.send({ user, token });
   } catch (error) {
     res.status(400).send(error);
+  }
+});
+
+router.post("/users/todo", auth, async (req, res) => {
+  // View logged in user profile
+  try {
+    const task = new ToDo(req.body);
+    await task.save();
+    res.status(201).send({ task });
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+
+router.post("/users/todo/logout", auth, async (req, res) => {
+  // Log user out of the application
+  try {
+    req.user.tokens = req.user.tokens.filter(token => {
+      return token.token != req.token;
+    });
+    await req.user.save();
+    res.send();
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+router.post("/users/todo/logoutall", auth, async (req, res) => {
+  // Log user out of all devices
+  try {
+    req.user.tokens.splice(0, req.user.tokens.length);
+    await req.user.save();
+    res.send();
+  } catch (error) {
+    res.status(500).send(error);
   }
 });
 
